@@ -18,7 +18,7 @@ from lib.ConfigReader import ConfigReader as Conf
 from lib.FacebookBot import FBBot
 
 if __name__ == '__main__':
-  conf=Conf(os.path.join(runPath, "etc/bot.ini"))
+  conf=Conf(os.path.join(runPath, "../etc/bot.ini"))
   # First try to read from the config
   fbid=conf.read("Bot", "fbid",       "")
   pwd =conf.read("Bot", "password",   "")
@@ -30,5 +30,6 @@ if __name__ == '__main__':
   # Set user agent to None to allow the bot to choose a random one
   if not ua:   ua = None
   # Start bot
-  bot = FBBot(fid, pwd, ua=ua)
-  bot.start()
+  bot = FBBot(fbid, pwd, user_agent=ua)
+  bot.load_plugins()
+  bot.listen()

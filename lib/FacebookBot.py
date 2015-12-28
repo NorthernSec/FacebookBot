@@ -12,7 +12,6 @@
 
 import os
 import sys
-import time
 runPath = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(os.path.join(runPath, ".."))
 
@@ -23,41 +22,19 @@ except:
 
 import lib.PluginManager as PM
 
-class FBBot():
-  def __init__(self, fid, pwd, ua=None):
-    self.client = fbchat.Client(fid, pwd, user_agent=ua)
+class FBBot(fbchat.Client):
+  
+  def load_plugins(self):
     self.plugins= PM.loadPlugins()
-    if self.client:
-      self.lastTextId = self.client.getThreadList(0,1)[0].last_message_id
-    else:
-      sys.exit("Could not log in")
 
-  def checkAndInterprete(self):
-    #self.client = fbchat.Client(fid, pwd, user_agent=ua)
-    last = self.client.getThreadList(0,1)[0]
-    if last.last_message_id != self.lastTextId:
-      addr = last.thread_fbid
-      text = last.snippet
-      reply = self.analyze(text)
-      if reply:
-        self.client.sendMessage(reply, addr)
-
-  def analyze(self, text):
-    #split=text.split(" ")
-    #command = split.pop(0).lower()
-    #options = split
-    for p in self.plugins:
-      result = p.checkCommand(text)
-      if result: return result
-    #if command == "ping":
-    #  return "pong"
-    return False
-
-  def start(self):
-    print("Bot is ready")
-    try:
-      while True:
-        self.checkAndInterprete()
-        time.sleep(0.5)
-    except KeyboardInterrupt:
-      print("Bot stopped")
+  def on_message(self, mid, fbid, name, message, meta):
+    self.markAsDelivered(fbid, mid) # Mark message as delivered to prevent server from spamming us
+    self.markAsRead(fbid)           # Mark as read to have user interactiveness
+    if fbid == self.uid: return     # We don't want to deal with our own messages
+    message=message.strip()
+    if message:
+      for p in self.plugins:
+        result=p.checkCommand(message)
+        if result:
+          self.send(fbid, result)
+          return
