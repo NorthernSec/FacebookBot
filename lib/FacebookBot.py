@@ -15,6 +15,11 @@ import sys
 runPath = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(os.path.join(runPath, ".."))
 
+if sys.version_info < (3, 0):
+  from urllib import quote
+else:
+  from urllib.parse import quote
+    
 try:
   import fbchat
 except:
@@ -23,8 +28,12 @@ except:
 import lib.PluginManager as PM
 
 class FBBot(fbchat.Client):
+  def __init__(self, fbid, pwd, user_agent=None, debug=False):
+    super(self.__class__, self).__init__(fbid, pwd, user_agent, debug)
+    self.plugins=[]
   
   def load_plugins(self):
+    # make plugin manager a class
     self.plugins= PM.loadPlugins()
 
   def on_message(self, mid, fbid, name, message, meta):
@@ -33,8 +42,9 @@ class FBBot(fbchat.Client):
     if fbid == self.uid: return     # We don't want to deal with our own messages
     message=message.strip()
     if message:
+      command, args = message.split(" ", 1) if " " in message else (message, "")
       for p in self.plugins:
-        result=p.checkCommand(message)
+        result=p.checkCommand(command, args)
         if result:
           self.send(fbid, result)
           return

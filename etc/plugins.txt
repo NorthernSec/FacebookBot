@@ -1,2 +1,5 @@
 # Plugin Location	load/default/pass
 plugins/ping		default
+plugins/google		default
+plugins/stackoverflow	default
+
