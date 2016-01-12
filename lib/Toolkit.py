@@ -1,3 +1,4 @@
+import re
 import requests
 import sys
 
@@ -15,5 +16,5 @@ def google_search(query):
   results = []
   if 'results' in data['responseData']:
     for r in data['responseData']['results']:
-      results.append( (r['title'], r['content'], r['url']) )
+      results.append( (r['titleNoFormatting'], r['content'], r['url']) )
   return results

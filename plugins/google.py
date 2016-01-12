@@ -24,11 +24,11 @@ class Plugin(Plugin):
       if not result:
         return self.default
       else:
-        reply=""
+        reply=[]
         self.searchResults={}
         ID=1
         for r in result:
-          reply+=("(%s) - %s\n%s\n\n"%(ID, r[0], r[1]))
+          reply.append("(%s) %s\n%s"%(ID, r[0], r[1]))
           self.searchResults[ID]=r
           ID+=1
       return reply

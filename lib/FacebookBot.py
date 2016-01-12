@@ -12,6 +12,8 @@
 
 import os
 import sys
+import time
+
 runPath = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(os.path.join(runPath, ".."))
 
@@ -44,7 +46,13 @@ class FBBot(fbchat.Client):
     if message:
       command, args = message.split(" ", 1) if " " in message else (message, "")
       for p in self.plugins:
+        print(p)
         result=p.checkCommand(command, args)
         if result:
-          self.send(fbid, result)
+          if type(result) is not list: result=[result]
+          for message in result:
+            self.send(fbid, message)
+            print(message)
+            return
+            time.sleep(0.2)
           return

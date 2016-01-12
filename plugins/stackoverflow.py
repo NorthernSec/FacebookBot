@@ -43,7 +43,7 @@ class Plugin(Plugin):
         reply=[]
         for r in self.searchResults.keys():
           reply.append("%s\n%s"%(self.searchResults[r]['url'], self.searchResults[r]['answers'][0]))
-        return "\n".join(reply)
+        return reply
 
   def getStatus(self, rType="text"):
     if rType == "json": return "{'no answers': %s}"%(self.noAnswers)
